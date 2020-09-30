@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-public
+spec:
+  type: LoadBalancer  
+  ports:
+  - name: guestbook
+    port: 8080
+  selector:
+    app: guestbook
