@@ -1,0 +1,20 @@
+build:
+  guestbook:
+    image: okteto.dev/go-guestbook:$OKTETO_GIT_COMMIT
+    dockerfile: Dockerfile
+  dev:
+    dockerfile: Dockerfile
+    target: dev
+
+deploy:
+  - cd manifests; kustomize edit set image okteto/guestbook:golang=${OKTETO_BUILD_GUESTBOOK_IMAGE}
+  - kubectl apply -k manifests
+dev:
+  guestbook:
+    command: ["bash"]
+    forward:
+      - 8080:8080
+      - 9229:9229
+    image: ${OKTETO_BUILD_DEV_IMAGE}
+    sync:
+      - .:/usr/src/app
