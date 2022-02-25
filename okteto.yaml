@@ -1,8 +1,6 @@
 build:
   guestbook:
     dockerfile: Dockerfile
-  dev:
-    dockerfile: Dockerfile
 
 deploy:
   - cd manifests; kustomize edit set image ${OKTETO_BUILD_GUESTBOOK_IMAGE}
@@ -13,6 +11,6 @@ dev:
     forward:
       - 8080:8080
       - 9229:9229
-    image: ${OKTETO_BUILD_DEV_IMAGE}
+    image: ${OKTETO_BUILD_GUESTBOOK_IMAGE}
     sync:
       - .:/usr/src/app
