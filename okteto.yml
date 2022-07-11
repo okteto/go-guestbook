@@ -4,7 +4,7 @@ build:
     context: .
 
 deploy:
-  - kubectl apply -f k8s.yml
+  - kubectl apply -k manifests
 
 dev:
   go-guestbook:
