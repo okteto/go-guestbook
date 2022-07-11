@@ -1,14 +1,14 @@
 build:
-  go-guestbook:
-    image: okteto.dev/go-guestbook:1.0.0
+  guestbook:
+    image: okteto.dev/guestbook:1.0.0
     context: .
 
 deploy:
+  - cd manifests; kustomize edit set image okteto/guestbook:golang=${OKTETO_BUILD_GUESTBOOK_IMAGE}
   - kubectl apply -k manifests
 
 dev:
-  go-guestbook:
-    image: okteto/golang:1
+  guestbook:
     command: bash
     sync:
       - .:/usr/src/app
