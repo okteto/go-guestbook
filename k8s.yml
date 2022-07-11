@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-guestbook
+spec:
+  selector:
+    matchLabels:
+      app: go-guestbook
+  template:
+    metadata:
+      labels:
+        app: go-guestbook
+    spec:
+      containers:
+        - image: okteto.dev/go-guestbook:1.0.0
+          name: go-guestbook
+          env:
+            - name: REDIS_HOST
+              value: redis
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-guestbook
+spec:
+  type: ClusterIP
+  ports:
+    - name: go-guestbook
+      port: 8080
+  selector:
+    app: go-guestbook
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-guestbook
+  annotations:
+    dev.okteto.com/generate-host: go-guestbook
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: go-guestbook
+                port:
+                  number: 8080
+            path: /
+            pathType: ImplementationSpecific
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ports:
+    - name: redis
+      port: 6379
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        selector: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6
