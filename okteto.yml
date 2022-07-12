@@ -1,0 +1,27 @@
+build:
+  guestbook:
+    image: okteto.dev/guestbook:1.0.0
+    context: .
+  guestbook-dev:
+    context: .
+    target: builder
+
+deploy:
+  - cd manifests; kustomize edit set image okteto/guestbook:golang=${OKTETO_BUILD_GUESTBOOK_IMAGE}
+  - kubectl apply -k manifests
+
+dev:
+  guestbook:
+    image: ${OKTETO_BUILD_GUESTBOOK_DEV_IMAGE}
+    command: bash
+    sync:
+      - .:/usr/src/app
+    volumes:
+      - /go
+      - /root/.cache
+    securityContext:
+      capabilities:
+        add:
+          - SYS_PTRACE
+    forward:
+      - 2345:2345
